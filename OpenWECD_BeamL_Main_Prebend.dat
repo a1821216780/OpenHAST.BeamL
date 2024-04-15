@@ -1,0 +1,116 @@
+------- OpenWECD.BeamL  主文件 v1.00 This software design and writen By 赵子祯 ------------------------------------------------
+NREL 15.0 MW offshore baseline 梁动力学BeamL输入主文件by赵子祯
+======================== SIMULATION CONTROL --------------------------------------！仿真控制
+1          DynamicSolve            - Dynamic solve (false for static solve) (-){0: 静态模态求解, 1:静态位移求解，2：动态位移求解，3：外部调用BeamL采用模态频率法，4：外部调用BeamL采用CR-AMM法，5：外部调用BeamL采用CR-FEM法，6：外部调用BeamL采用GEBT法(暂时没有实现)} 
+========================  General Options  ===========================[used all]
+1         Mdtype                                                                          - 模型类型  (-) { 0: 叶片, 1: 塔架 }
+6         SModeNum                                                                            - 模态拟合的多项式阶数{默认为6阶},注意的是给定的结构变截面要求的截面个数必须>SModeNum +2,默认就行，没必要改
+0                                                AfExtBeamDyn                         - 材料信息文件{0：Beamdyn ,1:Bladed}
+"./BeamL_Structrl_PreBend.dat"                             ExtStrFile                               -  外部结构文件[used only AfExtBeamDyn=false ]
+========================  Static Modal Parameter ========================[when used DynamicSolve=0](默认为悬梁，可以计算其他梁，懒得写程序了)
+True    Af_GFMode                      - 是否生成模态文件，以供Openfast使用,本软件支持生成标准的模态文件
+True    Af_GFModeVector            - 是否生成模态频率向量文件
+True    Af_GFModeShape             - 是否生成模态文件振型文件
+"./Result/测试生成的梁模态文件.out"             GFModePath       - 生成的标准OpenFast模态文件路径[when used Af_GFMode=true]
+"./Result/测试生成的梁模态向量文件.out"       GFModeVectorPath       - 生成的标准模态向量文件路径[when used Af_GFModeVector=true]
+"./Result/测试生成的梁模态振形文件.out"             GFModeShapePath       - 生成的标准模态振形文件路径[when used Af_GFModeShape=true]
+
+========================  Boundary Conditions =======================[when used DynamicSolve=0,1,2]#暂时不支持
+0,1 ,2 ,3 , 4 , 5                                           Fixed_Node                               - 边界条件，即固定的自由度编号,默认为节点固定的悬臂梁，编号从零开始算起[when used DynamicSolve!=0]
+
+========================  Static Displacement Analysis ========================[when used DynamicSolve=1]
+2       StaDisAM                  - 动态位移计算模型{0：线性FEM，1：CR-Tkim方法，2：CR-Alsta方法}
+"./BeamL_Static_Displacement_Analysis_InputFilePath_prebend"                      - StaGFInputFPath  - 外部力输入文件路径
+"./Result/测试生成的静态位移梁位移文件_PreBend.out"   StaDisGFOutPutPath  - 输出梁位移结果文件
+True    StaDisAf_GFMode                 - 是否生成变形后的非线性模态文件，以供Openfast使用,本软件支持生成标准的模态文件
+True    StaDisAf_GFModeVector            - 是否生成变形后的模态频率向量文件[when used StaDisAM=1,2]
+True    StaDisAf_GFModeShape             - 是否生成变形后的模态振型文件[when used StaDisAM=1,2]
+"./Result/测试生成的静态非线性位移梁模态文件_PreBend.out"             StaDisGFModePath       - 生成的标准变形后的非线性OpenFast模态文件路径[when used StaDisAf_GFMode=true]
+"./Result/测试生成的静态非线性位移梁模态向量文件_PreBend.out"       StaDisGFModeVectorPath       - 生成的变形后的非线性标准模态文件路径[when used StaDisAf_GFModeVector=true]
+"./Result/测试生成的静态非线性位移梁模态振型文件_PreBend.out"             StaDisGFModeShapePath       - 生成的变形后的非线性标准模态文件路径[when used StaDisAf_GFModeShape=true]
+
+========================  Dynamic Displacement Analysis ========================[when used DynamicSolve=2]
+0       DynDisAM                   - 动态位移计算模型{0：线性FEM，1：CR-FEM方法，2：CR-Alsta方法，3：CR-Mode方法}
+2       DynDisSolver               - 时域积分方法{0：RK2,1:RK4,2:HHT-α,3：HOFG-4，4：CrankNicolson，5：staRK4)(本文支持的一种高效，高精度积分算法，实践证明其角度和效率高于龙格库塔RK4)}
+0.02    K_fac                      - 刚度矩阵瑞丽阻尼系数
+0.02        M_fac                      - 质量矩阵瑞丽阻尼系数
+20       ElementNum                   - 元素个数{0：和输入的材料与几何参数匹配的个数，!=0 指定的均匀分布的元素个数} kp_total-1；
+0       t_initial            - 仿真开始时间 (s) [used only when DynamicSolve=2]
+300      t_final              - 仿真终止时间   (s) [used only when DynamicSolve=2]
+0.001   t_dt                   - 时域迭代步长         (s) [used only when DynamicSolve=2]
+"./Result/测试生成的动态位移梁位移文件_PreBend.out"    DynDis_OutPutPath          - 输出计算得到的外部位移文件路径
+True    DynDisAf_GFMode                  - 是否生成模态文件，以供Openfast使用,本软件支持生成标准的模态文件
+True    DynDisAf_GFModeVector            - 是否生成模态频率向量文件
+True    DynDisAf_GFModeShape             - 是否生成模态文件振型文件
+"./demo/BeamL_Dynamic_Displacement_Analysis_InputFilePath_Prebend.dat"    DGFInputFPath          - 外部力输入文件路径
+"./Result/测试生成的梁动态位移模态文件.out"             DGFModePath       - 生成的变形后的非线性标准OpenFast模态文件路径
+"./Result/测试生成的梁动态位移模态向量文件.out"       DGFModeVectorPath       - 生成的变形后的非线性标准模态文件路径
+"./Result/测试生成的梁动态位移模态振型文件.out"             DGFModeShapePath       - 生成的变形后的非线性标准模态文件路径
+
+
+========================  External Calling Parameters =======================[when used DynamicSolve=3,4,5,6]
+8                                                        ExtElementNum                       - 元素个数{0：和输入的材料与几何参数匹配的个数，!=0 指定的均匀分布的元素个数,进行缩减插值，这个值的大小最小为 SModeNum+2}
+2                                                        FlpModalNum                         - 挥舞模态的数量[used only DynamicSolve=3,4 ]
+1                                                        EdgModalNum                         - 摆振模态的数量[used only DynamicSolve=3,4 ]
+0.477465 0.477465 0.477465        AmmDamp                             - 各个模态对应的阻尼系数（%）!顺序和大小与MatrixOfModal当中的要一致。
+False                                                    UseBeamLModal                       - 是否要使用BeamL生成模态，如果你想使用 OpenFast 当中的模态的话可以设置为 false 并在下方填写。
+        MatrixOfModal                        -矩阵开始标志，不要删除[used only DynamicSolve=3]
+ 0.0622       BldFl1Sh(2) - Flap mode 1, coeff of x^2
+     1.7254   BldFl1Sh(3) -            , coeff of x^3
+    -3.2452   BldFl1Sh(4) -            , coeff of x^4
+     4.7131   BldFl1Sh(5) -            , coeff of x^5
+    -2.2555   BldFl1Sh(6) -            , coeff of x^6
+    -0.5809   BldFl2Sh(2) - Flap mode 2, coeff of x^2
+     1.2067   BldFl2Sh(3) -            , coeff of x^3
+   -15.5349   BldFl2Sh(4) -            , coeff of x^4
+    29.7347   BldFl2Sh(5) -            , coeff of x^5
+   -13.8255   BldFl2Sh(6) -            , coeff of x^6
+     0.3627   BldEdgSh(2) - Edge mode 1, coeff of x^2
+     2.5337   BldEdgSh(3) -            , coeff of x^3
+    -3.5772   BldEdgSh(4) -            , coeff of x^4
+      2.376   BldEdgSh(5) -            , coeff of x^5
+    -0.6952   BldEdgSh(6) -            , coeff of x^6
+
+======================== GEOMETRY PARAMETER ==================================[when used DynamicSolve=0,1,2,3,4,5,6]
+21               kp_total                           - Total number of key points (-) [must be at least 3]
+   kp_xr         kp_yr         kp_zr        initial_twist ( x , y , z 坐标)
+   (m)            (m)          (m)            (deg)
+0	0	0	0
+3.925981576	0.077096376	0	0
+7.845909573	0.308266627	0	0
+11.75373975	0.693154305	0	0
+15.6434465	1.23116594	0	0
+19.5090322	1.92147196	0	0
+23.34453639	2.76300796	0	0
+27.14404499	3.754476355	0	0
+30.90169944	4.89434837	0	0
+34.61170571	6.180866408	0	0
+38.26834324	7.612046749	0	0
+41.86597375	9.185682617	0	0
+45.39904997	10.89934758	0	0
+48.86212415	12.75039929	0	0
+52.24985647	14.73598356	0	0
+55.5570233	16.85303877	0	0
+58.77852523	19.09830056	0	0
+61.90939493	21.46830691	0	0
+64.94480483	23.95940344	0	0
+67.88007455	26.56774906	0	0
+70.71067812	29.28932188	0	0
+======================== BeamL VTK ================================================[used only Dynamic solve=0,1,2]
+true                             AfVTK                   - 是否开启 VTK 输出
+"./VTK"                              VTK_Path              - VtK输出文件夹，注意是文件夹
+0.4                              DT_VTK                  - 每多少s输出一个VTK文件（最小为DT,越小的DT_VTK以为着越高的帧率）
+50                               VTK_SideNum             - VTK 描述模型柱体的侧面节点数量，越大越接近真实体的描述
+======================== OUTPUT ================================================
+false                                        SumPrint  - 是否生成AeroL输出文件 "<rootname>.AL.out"?  (flag)
+true                                        AfSpanput - 输出模式选择是节点·还是变量。如果是节点将生成下面节点数量的文件，否则生成输出变量个数的文件。当前先支持输出节点。
+1                      DT_Out      - 每多少s输出一个数据
+50                     TStart      - 什么时候开始输出数据
+0,1,2                                           BldOutSig - 输出的叶片编号，默认只有0
+"./Result1/"                                SumPath   - 生成的文件夹名称，注意是文件夹！
+3                                           NBlOuts   - Number of blade node outputs [0 - BlOutNd-1] (-)
+1,5,18                 BlOutNd   - Blade nodes whose values will be output  (-)（从0开确实算）
+3                                           NTwOuts   - Number of tower node outputs [0 - BlOutNd-1]  (-)
+1,          1,        5                     TwOutNd   - Tower nodes whose values will be output  (-)（从0开确实算）
+                   OutList                  - The next line(s) contains a list of output parameters.  See OutListParameters.xlsx for a listing of available output channels, (-)
+RootFxr

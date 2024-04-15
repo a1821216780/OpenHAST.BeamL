@@ -1,0 +1,10 @@
+------- OpenWECD.BeamL  静态外力输入文件 v1.00 This software design and writen By 赵子祯 ------------------------------------------------
+NREL 5.0 MW offshore baseline 梁动力学BeamL 动态外力输入文件by赵子祯
+======================== 外力参数  ========================！外力数据（支持excle粘贴）
+1                       Num_point                     - 外力行数
+======================== ExtFMatrix  ========================！外力数据（支持excle粘贴,节点编号从1开始）
+Node_num[used only  DynDisAf_EF=false]	fx	fy	fz	Mx	My	Mz
+21	0	0	500	0	0	0
+
+
+
